@@ -18,8 +18,6 @@ var Tree = (function() {
 
         this.root = new Node(value);
 
-        // 在这个实例属性上记录这是几叉树
-        this.childrenLimit = n;
     }
 
 
@@ -41,7 +39,7 @@ var Tree = (function() {
         }
 
         // node是树或者树节点[1]
-        if (isTree && node.childrenLimit < limit) {
+        if (isTree && node.CHILDREN_LIMIT < limit) {
             this.children.push(node.root);
             return this;
         } else if (isTreeNode && node.children.length < limit) {
@@ -53,54 +51,88 @@ var Tree = (function() {
     };
 
     // 为树添加先序和后序遍历方法
-    Tree.prototype.postorderTraversal = function(callback, finalCB) {
+    // 遍历时会以当前结点的value为参数调用一个回调函数。该回调函数返回false则终止遍历
+    Tree.prototype.preorderTraversal = function(callback) {
         function traversal(node) {
-            if (node.children.length === 0) return;
+            if (node.children.length === 0) {
+                callback(node.value);
+                return;
+            }
 
             callback(node.value);
             node.children.forEach(traversal);
+        }
+
+        traversal(this.root);
+        return this;
+    };
+    
+    Tree.prototype.postorderTraversal = function(callback) {
+        function traversal(node) {
+            
+            if (node.children.length === 0) {
+                callback(node.value);                
+                return;
+            }
+            
+            for (var i = 0; i < node.children.length; i ++) {
+                traversal(node.children[i]);
+            }
+            callback(node.value);
+            
+            
         }
 
         traversal(this.root);
         
-        if(typeof finalCB === 'function') finalCB(this);
         return this;
     };
 
-    Tree.prototype.preorderTraversal = function(callback) {
-        function traversal(node) {
-            if (node.children.length === 0) return;
-
-            node.children.forEach(traversal);
-            callback(node.value);
-        }
-
-        traversal(this.root);
-        return this;
-    };
     
     
-    // 添加 初始化一个高度为height的n叉树 的方法
+    // 添加 初始化一个高度为height的n叉树 的方法 （n可以是返回一个数字的函数。）
     // initValue表示每个节点的value
     // initValue可以是函数。每创建一个节点，该函数会以该节点的父节点的value为参数被调用；对于根节点，参数是该节点的value
     Tree.prototype.generate = function(height, initValue, n) {
-        n = n || this.constructor.childrenLimit; // [2]
+        n = n || this.constructor.CHILDREN_LIMIT; // [2]
+
+        
         initValue = initValue === undefined ? null : initValue;
         
         this.root.value = typeof initValue === 'function' ? initValue(this.root.value) : initValue;
          
-        function append(node, currentHeight){
-            if(currentHeight  >= height) return;
+        // 由于n可能是函数，所以不得不作为参数传入每次递归，用以动态产生子节点个数 
+        function append(node, currentHeight, n){
+            var childrenCount = typeof n === 'function' ? n() : n;
             
-            for(var i = 0; i < n; i ++) {
-                node.children[i] = new TreeNode(n, typeof initValue === 'function' ? initValue(node.value) : initValue);
-                append(node.children[i], currentHeight + 1);
+            if(currentHeight >= height) return;
+            
+            for(var i = 0; i < childrenCount; i ++) {
+                node.children[i] = new TreeNode(childrenCount, typeof initValue === 'function' ? initValue(node.value) : initValue);
+                append(node.children[i], currentHeight + 1, n);
             }
         }
         
-        append(this.root, 1);
+        append(this.root, 1, n);
         return this;
     };
+    
+    
+    // find函数通过遍历树来查找一个指定值value（可以是一个函数）
+    // Tree.prototype.find = function(value, callback) {
+    //     var hasFound = false;
+    //     this.postorderTraversal(function(nodeValue){
+    //         console.log('!');
+    //         callback(nodeValue);
+    //         if (value === nodeValue || (typeof value === 'function' && value(nodeValue) === true))  {
+    //             hasFound = true;
+    //             console.log('find')
+    //             return false;
+    //         }
+    //     });
+
+    //     return hasFound;      
+    // };
     
     return Tree;
 } ());
@@ -113,7 +145,7 @@ var BinaryTree = (function(Tree) {
     }
 
     // 用于上文的[1]和[2]处
-    BinaryTree.childrenLimit = 2;
+    BinaryTree.CHILDREN_LIMIT = 2;
 
     // 普通的继承
     BinaryTree.prototype = Object.create(Tree.prototype);
@@ -158,9 +190,9 @@ var BinaryTree = (function(Tree) {
                     throw new Error('没有这样的遍历方法');
             }
 
-            // 开始遍历
+            // 开始遍历。一旦回调函数返回false则终止遍历
             process.forEach(function(func) {
-                func();
+                if (func() === false) return;
             });
         };
     }

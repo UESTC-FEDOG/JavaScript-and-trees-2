@@ -7,14 +7,16 @@
     <style>
         .node {
             box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
             border: 5px solid black;
-            padding: 20px;
+            padding: 10px;
         }
         
         .node .node {
-            display: inline-block;
-            width: calc((100% / 2) - 30px);
-            margin-right: 30px;
+            margin-right: 10px;
+            margin-top: 10px;
+            flex-grow: 1;
         }
         
         .active {
@@ -24,9 +26,12 @@
     <script src="tree.js"></script>
 </head>
 <body>
+    <div>
+        <label for="">查询：<input type="text" id="to-search"></label>
+    </div>
     <div id="buttons">
+        <button data-type="find">开始搜索</button>
         <button data-type="preorderTraversal">前序遍历</button>
-        <button data-type="inorderTraversal">中序遍历</button>
         <button data-type="postorderTraversal">后序遍历</button>
     </div>
     <script src="main.js"></script>
