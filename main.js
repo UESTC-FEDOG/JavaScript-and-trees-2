@@ -34,13 +34,21 @@
             methodName = e.target.dataset.type;
             
             
-            tree[methodName](function(node) {
+            if(document.querySelector('.target')) {
+                document.querySelector('.target').classList.remove('target');
+            }
+            
+            
+            tree[methodName === 'find' ? 'preorderTraversal': methodName](function(node) {
                 // 遍历每一个节点时，都把定时器推入动画队列以待启动
                 animationArray.push(setTimeout.bind(null, function() {
                     var active = document.querySelector('.active'); 
-                    
                     if(active) active.classList.remove('active');
+                    
                     node.classList.add('active');
+                    if(methodName === 'find' && node.dataset.value === document.getElementById('to-search').value) {
+                        node.classList.add('target');
+                    }
                 }));
                 
             });
