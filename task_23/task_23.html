@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task_23
+	</title>
+	<script src="task_23.js"></script>
+	<style>
+		*{
+			display: flex;
+			justify-content: space-between;
+			padding: 20px;
+		}
+
+		head{
+			display: none;
+		}
+		body{
+			display: block;
+		}
+		#root{
+			height: 300px;
+			border: 5px solid #000;
+			margin: 50px auto;
+		}
+		.one{
+			height: 260px;
+			border: 5px solid red;
+		}
+		.two{
+			height: 220px;
+			border: 5px solid green;
+		}
+		.three{
+			height: 180px;
+			border: 5px solid blue;
+		}
+		input{
+			height: 50px;
+			float: left;
+		}
+	</style>
+</head>
+<body>
+	<input type="button"value="深度遍历">
+	<input type="button" value="广度遍历">
+	
+	<div id="root">中国
+		<div class="one">陕西
+			<div class="two">安康
+				<div class="three">安大</div>
+				<div class="three">安中</div>
+				<div class="three">安小</div>
+			</div>
+			<div class="two">西安
+				<div class="three">西大</div>
+				<div class="three">西中</div>
+			</div>
+		</div>
+		<div class="one">云南
+			<div class="two">大理
+				<div class="three">大大</div>
+				<div class="three">大中</div>
+			</div>
+			<div class="two">丽江
+				<div class="three">丽大</div>
+				<div class="three">丽中</div>
+				<div class="three">丽小</div>
+				<div class="three">丽小小</div>
+			</div>
+		</div>
+		<div class="one">江苏</div>
+	</div>
+
+</body>
+</html>
